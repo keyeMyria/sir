@@ -1,0 +1,43 @@
+{
+  "name": "sir",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "lint": "esw app/**",
+    "lint-watch": "esw -w --changed app/**",
+    "start-ios": "react-native run-ios && npm run lint-watch",
+    "start-android": "react-native run-android && npm run lint-watch",
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest",
+    "precommit": "sh precommit-check.sh"
+  },
+  "dependencies": {
+    "react": "16.3.1",
+    "react-native": "0.55.4",
+    "react-native-elements": "^0.19.1",
+    "react-navigation": "^2.2.3",
+    "react-navigation-redux-helpers": "^1.1.2",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
+    "redux-form": "^7.3.0",
+    "redux-persist": "^5.10.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.3",
+    "babel-jest": "23.0.1",
+    "babel-preset-airbnb": "^2.4.0",
+    "babel-preset-react-native": "^4.0.0",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.9.1",
+    "eslint-watch": "^3.1.5",
+    "jest": "23.1.0",
+    "react-test-renderer": "16.3.1"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
