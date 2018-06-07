@@ -48,7 +48,7 @@ export default class App extends Component<Props> {
   }
 
   handlePress = (arr) => (ar) => {
-    alert(ar);
+    alert(ar)
   }
 
   render() {
