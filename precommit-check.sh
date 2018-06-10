@@ -20,7 +20,7 @@ function lint() {
   fi
 }
 
-lint "app index.* --ext .js .jsx --cache --color" $SRC_FILES;
+lint "src index.* --ext .js .jsx --cache --color" $SRC_FILES;
 
 
 echo "⚡️  changed files passed linting! ⚡️"

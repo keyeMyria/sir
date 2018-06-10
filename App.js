@@ -1,82 +1,85 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
+import React from 'react';
+import PropTypes from 'prop-types';
+import { BackHandler, ToastAndroid } from 'react-native';
+import { createNavigationPropConstructor, initializeListeners } from 'react-navigation-redux-helpers';
+import { PersistGate } from 'redux-persist/integration/react';
+import { Provider, connect } from 'react-redux';
 
-import React, { Component } from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  View, TouchableOpacity
-} from 'react-native';
+import { persistor, store } from './src/publics/redux/store';
+import RootNavigators from './src/publics/navigators/RootNavigators';
+import Splash from './src/splash-screen/components/Splash';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' +
-    'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu'
-});
+const navigationPropConstructor = createNavigationPropConstructor('root');
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF'
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5
-  }
-});
+class AppNavigator extends React.Component {
 
-type Props = {};
-export default class App extends Component<Props> {
   constructor() {
     super();
-    this.state = {
-      visible: false
-    };
+    this.countPressBack = 0;
   }
 
-  handlePress = (arr) => (ar) => {
-    alert(ar)
+  componentDidMount() {
+    initializeListeners('root', this.props.router);
+    BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
   }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
+  }
+
+  onBackButtonPressAndroid = () => {
+    const { dispatch, router } = this.props;
+    if (
+      (router.index === 1 && router.routes[1].index === 0) ||
+      (router.index === 2 && router.routes[2].routes[0].index === 0)
+    ) {
+      this.countPressBack = this.countPressBack + 1;
+      if (this.countPressBack < 2) {
+        ToastAndroid.show('Press BACK again to Exit', ToastAndroid.SHORT);
+        setTimeout(() => {
+          this.countPressBack = 0;
+        }, 3000);
+      } else {
+        return false;
+      }
+    }
+    dispatch({ type: 'Navigation/BACK' });
+    return true;
+  };
 
   render() {
-    const array = [
-      'satu', 'dua', 'tiga'
-    ];
+    const navigation = navigationPropConstructor(
+      this.props.dispatch,
+      this.props.router,
+    );
     return (
-      <View style={styles.container}>
-        {this.state.visible ? (
-          <Text style={styles.welcome}>
-            Welcome to React Native!
-          </Text>
-        ) : null}
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        {array.map(arr => (
-          <TouchableOpacity ref="touch" onPress={this.handlePress(arr)}>
-            <Text>Press bro</Text>
-          </TouchableOpacity>
-        ))}
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
-        <Text style={styles.instructions}>
-          {instructions}
-        </Text>
-      </View>
+      <RootNavigators
+        navigation={navigation}
+      />
     );
   }
 }
+
+AppNavigator.propTypes = {
+  router: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
+  router: state.router
+});
+
+const AppWithNavigationState = connect(mapStateToProps)(AppNavigator);
+
+const App = () => (
+  <Provider store={store}>
+    <PersistGate
+      loading={<Splash />}
+      persistor={persistor}
+    >
+      <AppWithNavigationState />
+    </PersistGate>
+  </Provider>
+);
+
+export default App;

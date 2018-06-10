@@ -7,7 +7,8 @@
   },
   "parser": "babel-eslint",
   "rules": {
-    "react/forbid-prop-types": 2,
+    "no-bitwise": ["error", { "allow": ["<<", "&"] }],
+    "react/forbid-prop-types": 0,
     "react/jsx-filename-extension": [
       1,
       {
